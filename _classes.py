@@ -55,9 +55,17 @@ class CardList:
         """ Creates a list of soups so that we can easily parse each of them """
         soup_list = [] 
         for html_file in html_list:
-            with open(html_file, "r", encoding="utf8") as fhandler:
-                soup = bs(fhandler.read(), "html.parser")
-                soup_list.append(soup)
+            try:
+                # First try reading with UTF-8 encoding
+                with open(html_file, "r", encoding="utf8") as fhandler:
+                    content = fhandler.read()
+            except UnicodeDecodeError:
+                # If UTF-8 fails, try reading with ISO-8859-1 encoding (this should work for mac)
+                with open(html_file, "r", encoding="ISO-8859-1") as fhandler:
+                    content = fhandler.read()
+
+            soup = bs(content, "html.parser")
+            soup_list.append(soup)
         return soup_list
 
     def __get_all_cards(self, page_soup):
