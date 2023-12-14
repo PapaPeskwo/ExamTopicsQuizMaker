@@ -19,19 +19,23 @@ class Quiz:
 
     def __init_questions_per_quiz(self):
         """
-            Initializez the varialbe that shows how many question should be shown in a quiz run
+            Initialize the variable that shows how many questions should be shown in a quiz run
         """
-
         try:
-            self.__questions_per_quiz = \
-                int(input("How many questions do you want to have? (Max: " + str(len(self.__cardlist.cards_list)) + ") "))
+            self.__questions_per_quiz = int(input("How many questions do you want to have? (Max: " + str(len(self.__cardlist.cards_list)) + ") "))
 
-            while type(self.__questions_per_quiz) != int or self.__questions_per_quiz > len(self.__cardlist.cards_list):
-                self.__questions_per_quiz = \
-                    int(input("Please pick a NUMBER. (Max: " + str(len(self.__cardlist.cards_list)) + ")"))
+            while self.__questions_per_quiz > len(self.__cardlist.cards_list):
+                self.__questions_per_quiz = int(input("Please pick a NUMBER. (Max: " + str(len(self.__cardlist.cards_list)) + ")"))
         except:
             print("Defaulted to max number of questions.")
             self.__questions_per_quiz = len(self.__cardlist.cards_list)
+
+        use_specific_range = input("Do you want the questions to be from a specific range [y/N]? ").lower() == 'y'
+        if use_specific_range:
+            self.__range_selection = input("Do you want the {} questions to be from the \n[1] beginning\n[2] end\nPlease select 1 or 2: ".format(self.__questions_per_quiz))
+        else:
+            self.__range_selection = None
+
 
     def __init_show_answer_immediately(self):
         """
@@ -55,8 +59,18 @@ class Quiz:
             Generate a random list of card objects that are limited by the size of how
             many questions the player wants to have
         """
-        random.shuffle(self.__cardlist.cards_list)
-        return self.__cardlist.cards_list[:self.__questions_per_quiz]
+        if self.__range_selection == "1":
+            # Select from the beginning
+            selected_cards = self.__cardlist.cards_list[:self.__questions_per_quiz]
+        elif self.__range_selection == "2":
+            # Select from the end
+            selected_cards = self.__cardlist.cards_list[-self.__questions_per_quiz:]
+        else:
+            # No specific range, use the whole list
+            selected_cards = self.__cardlist.cards_list
+
+        random.shuffle(selected_cards)
+        return selected_cards[:self.__questions_per_quiz]
 
 
     def __clear(self):
