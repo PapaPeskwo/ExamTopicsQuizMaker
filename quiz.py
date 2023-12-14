@@ -150,3 +150,5 @@ class Quiz:
         print("=^=" * 40)
         print("The quiz is DONE! Good job!")
         print("Your score: " + str(correct_answers) + "/" + str(self.__questions_per_quiz))
+        score_in_percent = (correct_answers / self.__questions_per_quiz) * 100
+        print("Your score in percent: {:.2f}%".format(score_in_percent))
