@@ -53,7 +53,15 @@ class Quiz:
 
         self.__create_wrong_answers_directory()
         
+        self.__init_questions_order()
         self.quiz_cards = self.__generate_quiz()
+
+
+    def __init_questions_order(self):
+        """
+        Asks the user if they want the questions in order and stores the response.
+        """
+        self.__questions_in_order = input("Do you want the questions to be in order [y/N]? ").lower() == 'y'
 
 
     def __init_questions_per_quiz(self):
@@ -95,8 +103,8 @@ class Quiz:
 
     def __generate_quiz(self) -> list:
         """
-            Generate a random list of card objects that are limited by the size of how
-            many questions the player wants to have
+        Generate a list of card objects that are limited by the size of how
+        many questions the player wants to have, and either in order or randomized.
         """
         if self.__range_selection == "1":
             # Select from the beginning
@@ -106,10 +114,12 @@ class Quiz:
             selected_cards = self.__cardlist.cards_list[-self.__questions_per_quiz:]
         else:
             # No specific range, use the whole list
-            selected_cards = self.__cardlist.cards_list
+            selected_cards = self.__cardlist.cards_list[:self.__questions_per_quiz]
 
-        random.shuffle(selected_cards)
-        return selected_cards[:self.__questions_per_quiz]
+        if not self.__questions_in_order:
+            random.shuffle(selected_cards)
+
+        return selected_cards
 
 
     def __clear(self):
