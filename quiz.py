@@ -3,9 +3,48 @@ from _classes import CardList, os, re
 import random
 from datetime import datetime 
 import textwrap
+import os
+
+
+def choose_resources_directory():
+    """
+    Lists all directories starting with 'res_' and the names of HTML files inside each.
+    Allows the user to choose based on these file names.
+    """
+    res_dirs = [d for d in os.listdir() if os.path.isdir(d) and d.startswith("res_")]
+    if not res_dirs:
+        raise Exception("No resource directories found starting with 'res_'")
+
+    options = []
+    for dir in res_dirs:
+        html_files = [file for file in os.listdir(dir) if file.endswith('.html')]
+        for file in html_files:
+            file_name_without_extension = os.path.splitext(file)[0]
+            options.append((dir, file_name_without_extension))
+
+    for i, option in enumerate(options):
+        print(f"{i + 1}: {option[1]} (in {option[0]})")
+    
+    choice = 0
+    while choice < 1 or choice > len(options):
+        try:
+            choice = int(input("Choose a resource (number): "))
+        except ValueError:
+            pass
+    
+    chosen_dir, _ = options[choice - 1]
+    return chosen_dir
+
+
+def get_resource_directory():
+    return choose_resources_directory()
+
 
 class Quiz:
     def __init__(self, resources_dir = None) -> None:
+        if resources_dir is None:
+            resources_dir = choose_resources_directory()
+        self.__cardlist = CardList(resources_dir)
         self.__cardlist = CardList(resources_dir)
         self.__log_dirname = "wrong_answers"  # the name of the directory where the .txt files with wrong answers will be stored
         
